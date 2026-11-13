@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Portal — Nordic Stays Management AS | Powered by NordStay</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        fjord: {
+                            950: '#090D16',
+                            900: '#0F172A',
+                            800: '#1E293B',
+                            700: '#334155',
+                        },
+                        pine: {
+                            50: '#F0FDFA',
+                            100: '#CCFBF1',
+                            200: '#99F6E4',
+                            500: '#14B8A6',
+                            600: '#0D9488',
+                            700: '#0F766E',
+                            800: '#115E59',
+                        },
+                        stonewarm: '#F8F9FA',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Slanted booking bars modeled after modern Nordic PMS calendar aesthetics */
+        .slant-bar {
+            clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+        }
+        /* Subtle custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F5F9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-fjord-900 font-sans antialiased selection:bg-pine-100 selection:text-pine-800">
+
+    <!-- =====================================================================
+         1. TOP WHITE-LABEL AGENCY NAVIGATION BAR (owner.nordstay.com)
+    ====================================================================== -->
+    <header class="sticky top-0 z-40 border-b border-slate-200/90 bg-white/95 backdrop-blur-md">
+        <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
+            
+            <!-- White-Label Agency Identity -->
+            <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-pine-700 text-white shadow-xs">
+                    <i data-lucide="trees" class="h-5 w-5 text-pine-100"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm sm:text-base font-extrabold tracking-tight text-fjord-900">
+                            Nordic Stays Management AS
+                        </span>
+                        <span class="hidden sm:inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
+                            owner.nordstay.com
+                        </span>
+                    </div>
+                    <p class="text-[11px] font-medium text-slate-500">
+                        Owner Portal • Powered by <span class="font-semibold text-pine-700">NordStay</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Center/Right Controls: Property Switcher + Locale Toggle + Owner Badge -->
+            <div class="flex flex-wrap items-center gap-2.5 sm:gap-3.5">
+                
+                <!-- Property Switcher Dropdown -->
+                <div class="relative">
+                    <label for="property-switcher" class="sr-only">Select Property</label>
+                    <div class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-pine-700">
+                        <i data-lucide="home" class="h-4 w-4"></i>
+                    </div>
+                    <select id="property-switcher" onchange="switchProperty(this.value)"
+                        class="appearance-none rounded-xl border border-slate-300 bg-slate-50/90 py-2 pl-9 pr-9 text-xs sm:text-sm font-bold text-fjord-900 shadow-2xs hover:border-pine-600 focus:border-pine-600 focus:bg-white focus:outline-none cursor-pointer transition-colors">
+                        <option value="hemsedal">🇳🇴 Hemsedal Fjellhytte (Norway • NOK)</option>
+                        <option value="are">🇸🇪 Åre Ski Stuga (Sweden • SEK)</option>
+                        <option value="oslo">🇳🇴 Grünerløkka Loft (Oslo, Norway • NOK)</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-2.5 flex items-center text-slate-500">
+                        <i data-lucide="chevrons-up-down" class="h-4 w-4"></i>
+                    </div>
+                </div>
+
+                <!-- Language / Locale Toggle (EN / NO / SE) -->
+                <div class="inline-flex rounded-xl border border-slate-200 bg-slate-100 p-0.5 text-xs font-bold" role="group" aria-label="Language Switcher">
+                    <button onclick="setLocale('EN')" data-lang="EN" class="lang-btn rounded-lg bg-white px-2.5 py-1.5 text-fjord-900 shadow-2xs transition-all">EN</button>
+                    <button onclick="setLocale('NO')" data-lang="NO" class="lang-btn rounded-lg px-2.5 py-1.5 text-slate-500 hover:text-fjord-900 transition-all">NO</button>
+                    <button onclick="setLocale('SE')" data-lang="SE" class="lang-btn rounded-lg px-2.5 py-1.5 text-slate-500 hover:text-fjord-900 transition-all">SE</button>
+                </div>
+
+                <!-- Owner Profile Badge -->
+                <div class="hidden md:flex items-center gap-2.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5">
+                    <div class="flex h-7 w-7 items-center justify-center rounded-full bg-pine-700 text-xs font-bold text-white">
+                        HL
+                    </div>
+                    <div class="text-left leading-tight">
+                        <div class="text-xs font-bold text-fjord-900">Henrik Lindqvist</div>
+                        <div class="text-[10px] font-medium text-slate-500" data-i18n="ownerRole">Property Owner</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- =====================================================================
+         MAIN PORTAL CONTAINER
+    ====================================================================== -->
+    <main class="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:px-8 space-y-8">
+
+        <!-- Property Context Banner + Primary Action -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xs">
+            <div class="flex items-start sm:items-center gap-4">
+                <div id="prop-icon-box" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-pine-50 text-pine-700 border border-pine-200/70">
+                    <i data-lucide="mountain-snow" class="h-6 w-6"></i>
+                </div>
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h1 id="prop-title" class="text-xl sm:text-2xl font-extrabold tracking-tight text-fjord-900">
+                            Hemsedal Fjellhytte
+                        </h1>
+                        <span id="prop-type-badge" class="rounded-full bg-pine-50 border border-pine-200 px-2.5 py-0.5 text-xs font-semibold text-pine-800">
+                            Mountain Cabin (Hytte) • 8 Guests
+                        </span>
+                        <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                            <span id="prop-smartlock-status">Yale Doorman L3S Online</span>
+                        </span>
+                    </div>
+                    <p id="prop-subtitle" class="mt-1 text-xs sm:text-sm text-slate-500">
+                        Holdeskaret 42, 3560 Hemsedal, Norway • Managed under Standard 80/20 Co-Host Agreement
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3">
+                <button onclick="openOwnerStayModal()"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-pine-700 px-4 py-2.5 text-xs sm:text-sm font-bold text-white shadow-sm hover:bg-pine-800 transition-all cursor-pointer">
+                    <i data-lucide="calendar-plus" class="h-4 w-4"></i>
+                    <span data-i18n="reserveOwnerStayBtn">+ Reserve Owner Stay</span>
+                </button>
+                <button onclick="downloadTaxReport('DAC7 Annual Summary')"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs sm:text-sm font-semibold text-fjord-800 hover:bg-slate-50 transition-colors cursor-pointer">
+                    <i data-lucide="file-down" class="h-4 w-4 text-pine-700"></i>
+                    <span id="tax-export-btn-label">Skatteetaten / DAC7 Export</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- =================================================================
+             1. TOP KPI SUMMARY CARDS (Dynamically Updated per Property/Month)
+        ================================================================== -->
+        <section aria-label="Key Financial & Occupancy Metrics" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            
+            <!-- Card 1: Net Owner Payout (Highlighted in Deep Fjord Teal) -->
+            <div class="rounded-2xl bg-gradient-to-br from-pine-800 to-pine-700 p-5 text-white shadow-md">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-pine-100" data-i18n="kpiNetPayout">Net Owner Payout</span>
+                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
+                        <i data-lucide="wallet" class="h-4 w-4 text-white"></i>
+                    </div>
+                </div>
+                <div id="kpi-net-payout" class="mt-3 text-2xl sm:text-3xl font-extrabold tracking-tight">
+                    38,420 NOK
+                </div>
+                <div class="mt-3 flex items-center gap-1.5 rounded-lg bg-white/10 px-2.5 py-1.5 text-[11px] font-medium text-pine-50">
+                    <i data-lucide="clock" class="h-3.5 w-3.5 text-pine-200 shrink-0"></i>
+                    <span id="kpi-payout-status">Scheduled Nov 15 • DNB Bank ****4821</span>
+                </div>
+            </div>
+
+            <!-- Card 2: Gross Rental Income -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-2xs">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-500" data-i18n="kpiGrossIncome">Gross Rental Income</span>
+                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-fjord-700">
+                        <i data-lucide="trending-up" class="h-4 w-4 text-pine-700"></i>
+                    </div>
+                </div>
+                <div id="kpi-gross-income" class="mt-3 text-2xl sm:text-3xl font-extrabold tracking-tight text-fjord-900">
+                    54,800 NOK
+                </div>
+                <div class="mt-3 flex items-center gap-1.5 text-xs font-semibold text-emerald-700">
+                    <span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-[11px]">
+                        <i data-lucide="arrow-up-right" class="mr-0.5 h-3 w-3"></i>
+                        <span id="kpi-gross-yoy">+14.2% vs last year</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Card 3: Occupancy & Municipal Night-Cap Tracker -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-2xs">
+                <div class="flex items-center justify-between">
+                    <span id="kpi-occ-label" class="text-xs font-semibold uppercase tracking-wider text-slate-500">Seasonal Occupancy</span>
+                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-fjord-700">
+                        <i data-lucide="calendar-check" class="h-4 w-4 text-pine-700"></i>
+                    </div>
+                </div>
+                <div id="kpi-occ-value" class="mt-3 text-2xl sm:text-3xl font-extrabold tracking-tight text-fjord-900">
+                    76.7%
+                </div>
+                <div class="mt-3" id="kpi-occ-footer">
+                    <!-- Populated dynamically: shows 90-night municipal cap bar for Oslo or ADR for cabins -->
+                </div>
+            </div>
+
+            <!-- Card 4: Deducted Expenses & Maintenance -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-2xs">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-500" data-i18n="kpiExpenses">Deducted Expenses</span>
+                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-700">
+                        <i data-lucide="wrench" class="h-4 w-4"></i>
+                    </div>
+                </div>
+                <div id="kpi-expenses-val" class="mt-3 text-2xl sm:text-3xl font-extrabold tracking-tight text-fjord-900">
+                    -1,490 NOK
+                </div>
+                <div class="mt-3 flex items-center justify-between text-xs text-slate-500">
+                    <span id="kpi-expenses-note">2 approved receipts this month</span>
+                    <a href="#maintenance-section" class="font-semibold text-pine-700 hover:underline">Inspect →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             2. INTERACTIVE AVAILABILITY & "RESERVE OWNER STAY" CALENDAR
+        ================================================================== -->
+        <section class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xs">
+            <!-- Calendar Header & Controls -->
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+                <div>
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        <h2 class="text-lg font-extrabold text-fjord-900" data-i18n="calendarHeading">
+                            Availability &amp; Owner Stay Calendar
+                        </h2>
+                        <!-- GDPR Privacy Badge -->
+                        <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600"
+                              title="Guest names and contact details are hidden in the Owner Portal under EU GDPR data minimization rules.">
+                            <i data-lucide="shield-check" class="h-3.5 w-3.5 text-pine-700"></i>
+                            GDPR Anonymized View
+                        </span>
+                    </div>
+                    <p class="mt-1 text-xs text-slate-500">
+                        Click any open date cell or use <strong>+ Reserve Owner Stay</strong> to block personal dates across Airbnb, Booking.com &amp; Finn.no instantly.
+                    </p>
+                </div>
+
+                <!-- Month Switcher + Legend -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <!-- Legend -->
+                    <div class="flex items-center gap-3 rounded-xl bg-slate-50 px-3 py-1.5 text-[11px] font-semibold text-slate-600 border border-slate-200/70">
+                        <span class="flex items-center gap-1.5">
+                            <span class="h-2.5 w-2.5 rounded-xs bg-pine-600"></span> Guest Stay
+                        </span>
+                        <span class="flex items-center gap-1.5">
+                            <span class="h-2.5 w-2.5 rounded-xs bg-amber-500"></span> Owner Stay
+                        </span>
+                        <span class="flex items-center gap-1.5">
+                            <span class="h-2.5 w-2.5 rounded-xs bg-white border border-slate-300"></span> Open
+                        </span>
+                    </div>
+
+                    <!-- Month Selector Pills -->
+                    <div class="inline-flex rounded-xl border border-slate-200 bg-slate-100 p-1 text-xs font-bold" id="month-selector">
+                        <button onclick="switchMonth('2026-11')" data-month="2026-11" class="month-btn rounded-lg bg-white px-3 py-1.5 text-fjord-900 shadow-2xs transition-all">Nov 2026</button>
+                        <button onclick="switchMonth('2026-12')" data-month="2026-12" class="month-btn rounded-lg px-3 py-1.5 text-slate-500 hover:text-fjord-900 transition-all">Dec 2026</button>
+                        <button onclick="switchMonth('2027-01')" data-month="2027-01" class="month-btn rounded-lg px-3 py-1.5 text-slate-500 hover:text-fjord-900 transition-all">Jan 2027</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Calendar Grid -->
+            <div class="mt-5">
+                <!-- Weekday Headers -->
+                <div class="grid grid-cols-7 gap-1.5 text-center text-[11px] font-bold uppercase tracking-wider text-slate-400 pb-2">
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+                    <div>Sun</div>
+                </div>
+
+                <!-- Dynamic Day Cells Rendered via JS -->
+                <div id="owner-calendar-grid" class="grid grid-cols-7 gap-1.5 sm:gap-2">
+                    <!-- Populated by renderOwnerCalendar() -->
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             3. TRANSPARENT FINANCIAL WATERFALL & MONTHLY STATEMENTS / TAX
+        ================================================================== -->
+        <section class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+            
+            <!-- Left 5 Cols: Itemized Payout Waterfall Card -->
+            <div class="lg:col-span-5 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xs flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                        <div>
+                            <h2 class="text-base sm:text-lg font-extrabold text-fjord-900" data-i18n="waterfallHeading">
+                                Payout Calculation Breakdown
+                            </h2>
+                            <p id="waterfall-period-label" class="text-xs text-slate-500">November 2026 • Settlement Statement</p>
+                        </div>
+                        <span id="waterfall-vat-badge" class="rounded-lg bg-pine-50 px-2.5 py-1 text-[11px] font-bold text-pine-800 border border-pine-200/70">
+                            12% Norsk Moms Incl.
+                        </span>
+                    </div>
+
+                    <!-- Itemized Waterfall Rows -->
+                    <div id="payout-waterfall-rows" class="mt-4 space-y-3 text-xs sm:text-sm">
+                        <!-- Dynamically rendered via renderFinancialWaterfall() -->
+                    </div>
+                </div>
+
+                <!-- Net Payout Summary Box -->
+                <div class="mt-6 rounded-xl bg-pine-50/90 border border-pine-200 p-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs sm:text-sm font-bold text-pine-900">Net Owner Payout</span>
+                        <span id="waterfall-net-total" class="text-lg sm:text-xl font-extrabold text-pine-800">38,420 NOK</span>
+                    </div>
+                    <p id="waterfall-vat-note" class="mt-1.5 text-[11px] leading-relaxed text-pine-700">
+                        Includes split VAT (Moms) accounting: 12% accommodation tax &amp; 25% cleaning/service VAT automatically reconciled for your annual tax return.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right 7 Cols: Monthly Statements & Nordic Tax Exports -->
+            <div class="lg:col-span-7 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xs">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div>
+                        <h2 class="text-base sm:text-lg font-extrabold text-fjord-900" data-i18n="statementsHeading">
+                            Monthly Statements &amp; Nordic Tax Reports
+                        </h2>
+                        <p class="text-xs text-slate-500">
+                            Official PDF payout statements &amp; EU DAC7 / national tax authority exports
+                        </p>
+                    </div>
+                    <button onclick="downloadTaxReport('2026 Full Year CSV Ledger')"
+                        class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-fjord-800 hover:bg-slate-100 transition-colors cursor-pointer">
+                        <i data-lucide="sheet" class="h-3.5 w-3.5 text-pine-700"></i>
+                        Export All (CSV)
+                    </button>
+                </div>
+
+                <!-- Statements Table -->
+                <div class="mt-4 overflow-x-auto">
+                    <table class="w-full text-left text-xs sm:text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                <th class="pb-3 pr-3">Period / Report</th>
+                                <th class="pb-3 px-3">Gross</th>
+                                <th class="pb-3 px-3">Net Payout</th>
+                                <th class="pb-3 px-3">Status</th>
+                                <th class="pb-3 pl-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="statements-table-body" class="divide-y divide-slate-100">
+                            <!-- Dynamically populated per property -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Official Nordic Tax Authority Box -->
+                <div class="mt-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/80 p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-fjord-900 text-pine-300">
+                            <i data-lucide="landmark" class="h-4 w-4"></i>
+                        </div>
+                        <div>
+                            <div id="tax-box-title" class="text-xs font-bold text-fjord-900">
+                                Skatteetaten &amp; EU DAC7 Automated Income Report (2026 YTD)
+                            </div>
+                            <p id="tax-box-desc" class="mt-0.5 text-[11px] text-slate-500">
+                                Pre-formatted deduction summary for Norwegian rental income rules (utleie av fritidsbolig / bolig).
+                            </p>
+                        </div>
+                    </div>
+                    <button onclick="downloadTaxReport('Official Tax Authority XML/PDF')"
+                        class="shrink-0 rounded-lg bg-fjord-900 px-3.5 py-2 text-xs font-bold text-white hover:bg-pine-700 transition-colors cursor-pointer">
+                        Download Tax Pack
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             4. MAINTENANCE, SMART LOCK & RECEIPTS LOG
+        ================================================================== -->
+        <section id="maintenance-section" class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xs">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                <div>
+                    <h2 class="text-base sm:text-lg font-extrabold text-fjord-900" data-i18n="maintenanceHeading">
+                        Property Care, Smart Lock &amp; Maintenance Receipts
+                    </h2>
+                    <p class="text-xs text-slate-500">
+                        Every field task, supply restock, and repair includes timestamped technician photos and itemized VAT receipts.
+                    </p>
+                </div>
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                    <i data-lucide="camera" class="h-3.5 w-3.5 text-pine-700"></i>
+                    100% Photo-Verified Expenses
+                </span>
+            </div>
+
+            <!-- Maintenance Cards Grid -->
+            <div id="maintenance-log-grid" class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-3">
+                <!-- Dynamically populated per property -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- =====================================================================
+         FOOTER
+    ====================================================================== -->
+    <footer class="mt-12 border-t border-slate-200 bg-white py-8">
+        <div class="mx-auto flex max-w-7xl flex-col sm:flex-row items-center justify-between gap-4 px-4 text-xs text-slate-500 sm:px-6 lg:px-8">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-fjord-900">Nordic Stays Management AS</span>
+                <span>•</span>
+                <span>Org.nr 928 410 552 MVA</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span>Hosted in EU/EEA (Stockholm)</span>
+                <span>•</span>
+                <span>GDPR &amp; DAC7 Compliant</span>
+                <span>•</span>
+                <span class="font-semibold text-pine-700">Powered by NordStay</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- =====================================================================
+         MODAL 1: RESERVE OWNER STAY MODAL
+    ====================================================================== -->
+    <div id="owner-stay-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-fjord-950/60 p-4 backdrop-blur-xs">
+        <div class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div class="flex items-center gap-2.5">
+                    <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
+                        <i data-lucide="calendar-heart" class="h-5 w-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-extrabold text-fjord-900">Reserve Owner Stay</h3>
+                        <p id="modal-prop-name" class="text-xs text-slate-500">Hemsedal Fjellhytte</p>
+                    </div>
+                </div>
+                <button onclick="closeOwnerStayModal()" class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-fjord-900">
+                    <i data-lucide="x" class="h-5 w-5"></i>
+                </button>
+            </div>
+
+            <form onsubmit="submitOwnerStay(event)" class="mt-4 space-y-4">
+                <div class="rounded-xl bg-amber-50/80 border border-amber-200/80 p-3 text-xs text-amber-900">
+                    <strong>Instant Channel Lock:</strong> Blocking personal dates immediately closes availability on Airbnb, Booking.com, Finn.no, and your direct booking site.
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="owner-checkin" class="block text-xs font-bold text-fjord-800">Check-in Date</label>
+                        <input type="date" id="owner-checkin" required
+                            class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-xs sm:text-sm font-medium text-fjord-900 focus:border-pine-600 focus:outline-none">
+                    </div>
+                    <div>
+                        <label for="owner-checkout" class="block text-xs font-bold text-fjord-800">Check-out Date</label>
+                        <input type="date" id="owner-checkout" required
+                            class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-xs sm:text-sm font-medium text-fjord-900 focus:border-pine-600 focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="owner-stay-note" class="block text-xs font-bold text-fjord-800">Arrival Instructions for Housekeeping</label>
+                    <textarea id="owner-stay-note" rows="3"
+                        placeholder="e.g., Family ski weekend — please pre-heat cabin to 21°C & leave 4 sacks of birch firewood."
+                        class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-xs sm:text-sm text-fjord-900 placeholder-slate-400 focus:border-pine-600 focus:outline-none">Family ski weekend — please pre-heat cabin to 21°C &amp; leave firewood.</textarea>
+                </div>
+
+                <div class="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs">
+                    <span class="font-medium text-slate-600">Post-stay owner turnover cleaning:</span>
+                    <span class="font-bold text-fjord-900">Standard Owner Rate</span>
+                </div>
+
+                <div id="owner-stay-error" class="hidden rounded-lg bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700"></div>
+
+                <div class="flex items-center justify-end gap-2.5 pt-2">
+                    <button type="button" onclick="closeOwnerStayModal()"
+                        class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-fjord-800 hover:bg-slate-50">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="rounded-xl bg-pine-700 px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-pine-800 transition-colors cursor-pointer">
+                        Confirm &amp; Sync Block
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         MODAL 2: STATEMENT / RECEIPT INSPECTOR MODAL
+    ====================================================================== -->
+    <div id="detail-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-fjord-950/60 p-4 backdrop-blur-xs">
+        <div class="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <h3 id="detail-modal-title" class="text-base font-extrabold text-fjord-900">Statement Details</h3>
+                <button onclick="closeDetailModal()" class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-fjord-900">
+                    <i data-lucide="x" class="h-5 w-5"></i>
+                </button>
+            </div>
+            <div id="detail-modal-body" class="mt-4">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         CONFIRMATION TOAST NOTIFICATION
+    ====================================================================== -->
+    <div id="portal-toast" class="fixed bottom-5 right-5 z-50 hidden max-w-sm items-center gap-3 rounded-2xl bg-fjord-900 px-4 py-3.5 text-white shadow-2xl border border-slate-700">
+        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-pine-600 text-white">
+            <i data-lucide="check-circle-2" class="h-4 w-4"></i>
+        </div>
+        <div class="text-xs leading-relaxed">
+            <div id="toast-title" class="font-bold text-white">Synced Across All Channels</div>
+            <div id="toast-message" class="text-slate-300">Owner stay blocked &amp; synced to Airbnb, Booking.com, and Finn.no.</div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         JAVASCRIPT ENGINE: Realistic Nordic Multi-Property State & Logic
+    ====================================================================== -->
+    <script>
+        lucide.createIcons();
+
+        // 1. Rich Multi-Property Data Store (Hemsedal NOK, Åre SEK, Oslo NOK)
+        const propertiesStore = {
+            hemsedal: {
+                id: 'hemsedal',
+                name: 'Hemsedal Fjellhytte',
+                typeBadge: 'Mountain Cabin (Hytte) • 8 Guests',
+                icon: 'mountain-snow',
+                smartLock: 'Yale Doorman L3S Online',
+                subtitle: 'Holdeskaret 42, 3560 Hemsedal, Norway • Managed under 80/20 Co-Host Agreement',
+                currency: 'NOK',
+                country: 'Norway',
+                vatLabel: '12% Norsk Moms Incl.',
+                vatNote: 'Includes split VAT (Moms) accounting: 12% accommodation tax & 25% cleaning/service VAT automatically reconciled for Skatteetaten.',
+                taxAuthority: 'Skatteetaten & EU DAC7',
+                taxBoxTitle: 'Skatteetaten & EU DAC7 Automated Income Report (2026 YTD)',
+                taxBoxDesc: 'Pre-formatted deduction summary under Norwegian fritidsbolig rental rules (85% taxable above 15,000 NOK threshold).',
+                bankAccount: 'DNB Bank ****4821',
+                isOsloApartment: false,
+                baseNightlyRate: 2850,
+                monthlyData: {
+                    '2026-11': {
+                        monthName: 'November 2026',
+                        gross: 54800,
+                        otaFees: -4930,
+                        cleaningFees: -3600,
+                        agencyFee: -6360,
+                        maintenance: -1490,
+                        netPayout: 38420,
+                        payoutStatus: 'Scheduled Nov 15 • DNB Bank ****4821',
+                        grossYoY: '+14.2% vs Nov 2025',
+                        occupancyPct: '76.7%',
+                        adrText: 'Avg Nightly Rate: 2,884 NOK • 19 nights booked',
+                        expensesNote: '2 approved receipts this month',
+                        bookings: [
+                            { startDay: 2, nights: 4, type: 'guest', channel: 'Airbnb', label: 'Guest Stay • 4 nights' },
+                            { startDay: 7, nights: 3, type: 'guest', channel: 'Finn.no', label: 'Guest Stay • 3 nights' },
+                            { startDay: 13, nights: 3, type: 'owner', channel: 'Owner', label: 'Owner Stay • Henrik' },
+                            { startDay: 19, nights: 5, type: 'guest', channel: 'Booking.com', label: 'Guest Stay • 5 nights' },
+                            { startDay: 26, nights: 4, type: 'guest', channel: 'Direct', label: 'Guest Stay • 4 nights' }
+                        ]
+                    },
+                    '2026-12': {
+                        monthName: 'December 2026',
+                        gross: 89400,
+                        otaFees: -7150,
+                        cleaningFees: -4800,
+                        agencyFee: -10890,
+                        maintenance: -650,
+                        netPayout: 65910,
+                        payoutStatus: 'Projected Dec 15 • DNB Bank ****4821',
+                        grossYoY: '+21.8% Peak Ski Season',
+                        occupancyPct: '90.3%',
+                        adrText: 'Avg Nightly Rate: 3,725 NOK • 24 nights booked',
+                        expensesNote: '1 scheduled snow-clearing check',
+                        bookings: [
+                            { startDay: 1, nights: 5, type: 'guest', channel: 'Booking.com', label: 'Guest Stay • 5 nights' },
+                            { startDay: 8, nights: 4, type: 'guest', channel: 'Airbnb', label: 'Guest Stay • 4 nights' },
+                            { startDay: 14, nights: 5, type: 'guest', channel: 'Finn.no', label: 'Guest Stay • 5 nights' },
+                            { startDay: 21, nights: 5, type: 'owner', channel: 'Owner', label: 'Owner Stay • Henrik' },
+                            { startDay: 27, nights: 5, type: 'guest', channel: 'Direct', label: 'Guest Stay • 5 nights' }
+                        ]
+                    },
+                    '2027-01': {
+                        monthName: 'January 2027',
+                        gross: 72500,
+                        otaFees: -5800,
+                        cleaningFees: -4200,
+                        agencyFee: -8900,
+                        maintenance: 0,
+                        netPayout: 53600,
+                        payoutStatus: 'Projected Jan 15 • DNB Bank ****4821',
+                        grossYoY: '+11.5% vs Jan 2026',
+                        occupancyPct: '80.6%',
+                        adrText: 'Avg Nightly Rate: 3,152 NOK • 23 nights booked',
+                        expensesNote: 'No deductions scheduled',
+                        bookings: [
+                            { startDay: 3, nights: 6, type: 'guest', channel: 'Airbnb', label: 'Guest Stay • 6 nights' },
+                            { startDay: 11, nights: 4, type: 'guest', channel: 'Booking.com', label: 'Guest Stay • 4 nights' },
+                            { startDay: 18, nights: 5, type: 'guest', channel: 'Finn.no', label: 'Guest Stay • 5 nights' },
+                            { startDay: 25, nights: 4, type: 'guest', channel: 'Direct', label: 'Guest Stay • 4 nights' }
+                        ]
+                    }
+                },
+                statements: [
+                    { period: 'October 2026', gross: '49,200 NOK', net: '34,180 NOK', status: 'Paid Oct 15', statusColor: 'emerald', breakdown: { gross: 49200, ota: -4420, clean: -3200, fee: -5920, maint: -1480, net: 34180 } },
+                    { period: 'September 2026', gross: '41,600 NOK', net: '29,410 NOK', status: 'Paid Sep 15', statusColor: 'emerald', breakdown: { gross: 41600, ota: -3740, clean: -2800, fee: -5150, maint: -500, net: 29410 } },
+                    { period: 'August 2026', gross: '52,900 NOK', net: '37,890 NOK', status: 'Paid Aug 15', statusColor: 'emerald', breakdown: { gross: 52900, ota: -4760, clean: -3400, fee: -6450, maint: -400, net: 37890 } },
+                    { period: '2026 YTD Skatteetaten / DAC7', gross: '518,400 NOK', net: '369,120 NOK', status: 'Tax Ready', statusColor: 'pine', isTax: true }
+                ],
+                maintenanceLog: [
+                    {
+                        id: 'm-hem-1',
+                        date: 'Nov 06, 2026',
+                        title: 'Birch Firewood Restock (10 Sacks)',
+                        vendor: 'Hemsedal Ved & Fjellservice AS',
+                        amount: '950 NOK',
+                        status: 'Auto-deducted',
+                        statusBadge: 'bg-amber-50 text-amber-800 border-amber-200',
+                        icon: 'flame',
+                        photoLabel: 'Covered Woodshed Stocked',
+                        notes: 'Delivered 10x 40L kiln-dried Norwegian birch firewood sacks to dry entry storage prior to winter ski arrivals.'
+                    },
+                    {
+                        id: 'm-hem-2',
+                        date: 'Nov 02, 2026',
+                        title: 'Yale Doorman L3S Battery & Winter Seal Check',
+                        vendor: 'Nordic Stays Field Tech (Olav K.)',
+                        amount: '540 NOK',
+                        status: 'Approved',
+                        statusBadge: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                        icon: 'key-round',
+                        photoLabel: 'Lock Keypad & Weatherstrip',
+                        notes: 'Replaced 4x AA lithium cold-weather batteries, lubricated deadbolt mechanism, and verified remote PIN sync.'
+                    },
+                    {
+                        id: 'm-hem-3',
+                        date: 'Oct 19, 2026',
+                        title: 'Sauna Heater Stone & Thermostat Inspection',
+                        vendor: 'Hallingdal Elektro AS',
+                        amount: '1,480 NOK',
+                        status: 'Settled in Oct',
+                        statusBadge: 'bg-slate-100 text-slate-700 border-slate-200',
+                        icon: 'thermometer-sun',
+                        photoLabel: 'Harvia Heater Elements',
+                        notes: 'Tested thermal cutoff sensor and rearranged olivine diabase sauna stones for optimal airflow.'
+                    }
+                ]
+            },
+
+            are: {
+                id: 'are',
+                name: 'Åre Ski Stuga',
+                typeBadge: 'Timber Cabin (Stuga) • 6 Guests',
+                icon: 'snowflake',
+                smartLock: 'Nuki Smart Lock 4 Pro Online',
+                subtitle: 'Björnen Fjällväg 18, 837 52 Åre, Sweden • Managed under 80/20 Co-Host Agreement',
+                currency: 'SEK',
+                country: 'Sweden',
+                vatLabel: '12% Svensk Moms Incl.',
+                vatNote: 'Includes split VAT (Moms) accounting: 12% hotel/cabin rental VAT & 25% cleaning VAT formatted for Skatteverket.',
+                taxAuthority: 'Skatteverket & EU DAC7',
+                taxBoxTitle: 'Skatteverket & EU DAC7 Annual Rental Summary (2026 YTD)',
+                taxBoxDesc: 'Includes automatic tracking of the 40,000 SEK standard deduction (schablonavdrag) + 20% rental income deduction.',
+                bankAccount: 'SEB Bank ****9104',
+                isOsloApartment: false,
+                baseNightlyRate: 2650,
+                monthlyData: {
+                    '2026-11': {
+                        monthName: 'November 2026',
+                        gross: 48200,
+                        otaFees: -4340,
+                        cleaningFees: -3400,
+                        agencyFee: -5490,
+                        maintenance: -1180,
+                        netPayout: 33790,
+                        payoutStatus: 'Scheduled Nov 15 • SEB Bank ****9104',
+                        grossYoY: '+16.8% vs Nov 2025',
+                        occupancyPct: '73.3%',
+                        adrText: 'Avg Nightly Rate: 2,678 SEK • 18 nights booked',
+                        expensesNote: '2 approved receipts this month',
+                        bookings: [
+                            { startDay: 1, nights: 3, type: 'guest', channel: 'Airbnb', label: 'Guest Stay • 3 nights' },
+                            { startDay: 6, nights: 4, type: 'guest', channel: 'Booking.com', label: 'Guest Stay • 4 nights' },
+                            { startDay: 12, nights: 3, type: 'owner', channel: 'Owner', label: 'Owner Stay • Henrik' },
+                            { startDay: 18, nights: 4, type: 'guest', channel: 'Direct', label: 'Guest Stay • 4 nights' },
+                            { startDay: 24, nights: 4, type: 'guest', channel: 'Airbnb', label: 'Guest Stay • 4 nights' }
+                        ]
+                    },
+                    '2026-12': {
+                        monthName: 'December 2026',
+                        gross: 82600,
+                        otaFees: -6600,
+                        cleaningFees: -4500,
+                        agencyFee: -10100,
+                        maintenance: -490,
+                        netPayout: 60910,
+                        payoutStatus: 'Projected Dec 15 • SEB Bank ****9104',
+                        grossYoY: '+19.4% Alpine Opening',
+                        occupancyPct: '87.1%',
+                        adrText: 'Avg Nightly Rate: 3,441 SEK • 24 nights booked',
+                        expensesNote: '1 chimney sweep inspection',
+                        bookings: [
+                            { startDay: 2, nights: 5, type: 'guest', channel: 'Booking.com', label: 'Guest Stay • 5 nights' },
+                            { startDay: 9, nights: 5, type: 'guest', channel: 'Airbnb', label: 'Guest Stay • 5 nights' },
+                            { startDay: 16, nights: 4, type: 'guest', channel: 'Direct', label: 'Guest Stay • 4 nights' },
+                            { startDay: 22, nights: 4, type: 'owner', channel: 'Owner', label: 'Owner Stay • Henrik' },
+                            { startDay: 27, nights: 4, type: 'guest', channel: 'Airbnb', label: 'Guest Stay • 4 nights' }
+                        ]
+                    },
+                    '2027-01': {
+                        monthName: 'January 2027',
+                        gross: 68900,
+                        otaFees: -5510,
+                        cleaningFees: -3900,
+                        agencyFee: -8490,
+                        maintenance: 0,
+                        netPayout: 51000,
+                        payoutStatus: 'Projected Jan 15 • SEB Bank ****9104',
+                        grossYoY: '+12.1% vs Jan 2026',
+                        occupancyPct: '77.4%',
+                        adrText: 'Avg Nightly Rate: 2,870 SEK • 24 nights booked',
+                        expensesNote: 'No deductions scheduled',
+                        bookings: [
+                            { startDay: 2, nights: 5, type: 'guest', channel: 'Airbnb', label: 'Guest Stay • 5 nights' },
+                            { startDay: 10, nights: 5, type: 'guest', channel: 'Booking.com', label: 'Guest Stay • 5 nights' },
+                            { startDay: 17, nights: 4, type: 'guest', channel: 'Direct', label: 'Guest Stay • 4 nights' },
+                            { startDay: 24, nights: 5, type: 'guest', channel: 'Airbnb', label: 'Guest Stay • 5 nights' }
+                        ]
+                    }
+                },
+                statements: [
+                    { period: 'October 2026', gross: '44,100 SEK', net: '31,040 NOK'.replace('NOK', 'SEK'), status: 'Paid Oct 15', statusColor: 'emerald', breakdown: { gross: 44100, ota: -3960, clean: -3100, fee: -5200, maint: -800, net: 31040 } },
+                    { period: 'September 2026', gross: '38,900 SEK', net: '27,520 SEK', status: 'Paid Sep 15', statusColor: 'emerald', breakdown: { gross: 38900, ota: -3500, clean: -2700, fee: -4800, maint: -380, net: 27520 } },
+                    { period: 'August 2026', gross: '49,500 SEK', net: '35,410 SEK', status: 'Paid Aug 15', statusColor: 'emerald', breakdown: { gross: 49500, ota: -4450, clean: -3200, fee: -5990, maint: -450, net: 35410 } },
+                    { period: '2026 YTD Skatteverket / DAC7', gross: '476,200 SEK', net: '338,900 SEK', status: 'Tax Ready', statusColor: 'pine', isTax: true }
+                ],
+                maintenanceLog: [
+                    {
+                        id: 'm-are-1',
+                        date: 'Nov 08, 2026',
+                        title: 'Boot Dryer & Mudroom Heater Calibration',
+                        vendor: 'Jämtland Fastighetsservice AB',
+                        amount: '790 SEK',
+                        status: 'Auto-deducted',
+                        statusBadge: 'bg-amber-50 text-amber-800 border-amber-200',
+                        icon: 'zap',
+                        photoLabel: 'Mudroom Wall Timer',
+                        notes: 'Installed 4-hour energy-saving timer switch on ski boot dryer to reduce winter electricity spikes.'
+                    },
+                    {
+                        id: 'm-are-2',
+                        date: 'Nov 01, 2026',
+                        title: 'Nuki Keypad & Power Pack Winter Recharge',
+                        vendor: 'Nordic Stays Field Tech (Maja L.)',
+                        amount: '390 SEK',
+                        status: 'Approved',
+                        statusBadge: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                        icon: 'lock',
+                        photoLabel: 'Nuki Keypad Entrance',
+                        notes: 'Swapped rechargeable Nuki Power Pack and verified auto-generated guest PIN codes.'
+                    },
+                    {
+                        id: 'm-are-3',
+                        date: 'Oct 14, 2026',
+                        title: 'Fireplace Glass & Flue Draft Check',
+                        vendor: 'Åre Sotning & Brandskydd',
+                        amount: '800 SEK',
+                        status: 'Settled in Oct',
+                        statusBadge: 'bg-slate-100 text-slate-700 border-slate-200',
+                        icon: 'flame',
+                        photoLabel: 'Jøtul Wood Stove',
+                        notes: 'Cleaned ceramic stove glass and verified clean chimney draft ahead of winter bookings.'
+                    }
+                ]
+            },
+
+            oslo: {
+                id: 'oslo',
+                name: 'Grünerløkka Loft',
+                typeBadge: 'City Apartment • 4 Guests • Oslo',
+                icon: 'building-2',
+                smartLock: 'Yale Doorman L3S Online',
+                subtitle: 'Thorvald Meyers gate 54, 0552 Oslo, Norway • Subject to Oslo 90-Night Short-Term Cap',
+                currency: 'NOK',
+                country: 'Norway',
+                vatLabel: '12% Norsk Moms Incl.',
+                vatNote: 'Includes 12% accommodation Moms and automated Oslo Municipality 90-night annual short-term rental cap tracking.',
+                taxAuthority: 'Skatteetaten & EU DAC7',
+                taxBoxTitle: 'Skatteetaten & EU DAC7 Urban Apartment Summary (2026 YTD)',
+                taxBoxDesc: 'Tracks short-term stays (<30 days) for Norwegian tax reporting and Oslo municipal compliance.',
+                bankAccount: 'DNB Bank ****4821',
+                isOsloApartment: true,
+                nightsUsed: 68,
+                nightsCap: 90,
+                baseNightlyRate: 1950,
+                monthlyData: {
+                    '2026-11': {
+                        monthName: 'November 2026',
+                        gross: 39600,
+                        otaFees: -3560,
+                        cleaningFees: -2800,
+                        agencyFee: -4650,
+                        maintenance: -420,
+                        netPayout: 28170,
+                        payoutStatus: 'Scheduled Nov 15 • DNB Bank ****4821',
+                        grossYoY: '+9.8% vs Nov 2025',
+                        occupancyPct: '73.3%',
+                        adrText: '68 / 90 nights used • Municipal Cap Safe',
+                        expensesNote: '1 approved receipt this month',
+                        bookings: [
+                            { startDay: 1, nights: 3, type: 'guest', channel: 'Airbnb', label: 'Guest Stay • 3 nights' },
+                            { startDay: 5, nights: 4, type: 'guest', channel: 'Booking.com', label: 'Guest Stay • 4 nights' },
+                            { startDay: 11, nights: 2, type: 'owner', channel: 'Owner', label: 'Owner Stay • Henrik' },
+                            { startDay: 15, nights: 4, type: 'guest', channel: 'Airbnb', label: 'Guest Stay • 4 nights' },
+                            { startDay: 21, nights: 5, type: 'guest', channel: 'Direct', label: 'Guest Stay • 5 nights' },
+                            { startDay: 27, nights: 3, type: 'guest', channel: 'Booking.com', label: 'Guest Stay • 3 nights' }
+                        ]
+                    },
+                    '2026-12': {
+                        monthName: 'December 2026',
+                        gross: 34200,
+                        otaFees: -3080,
+                        cleaningFees: -2400,
+                        agencyFee: -4100,
+                        maintenance: 0,
+                        netPayout: 24620,
+                        payoutStatus: 'Projected Dec 15 • DNB Bank ****4821',
+                        grossYoY: 'Auto-throttled near 90-night cap',
+                        occupancyPct: '58.1%',
+                        adrText: '86 / 90 nights used • 4 nights buffer left',
+                        expensesNote: 'No deductions scheduled',
+                        bookings: [
+                            { startDay: 2, nights: 4, type: 'guest', channel: 'Airbnb', label: 'Guest Stay • 4 nights' },
+                            { startDay: 9, nights: 4, type: 'guest', channel: 'Booking.com', label: 'Guest Stay • 4 nights' },
+                            { startDay: 16, nights: 4, type: 'guest', channel: 'Direct', label: 'Guest Stay • 4 nights' },
+                            { startDay: 23, nights: 4, type: 'owner', channel: 'Owner', label: 'Owner Stay • Henrik' }
+                        ]
+                    },
+                    '2027-01': {
+                        monthName: 'January 2027',
+                        gross: 41800,
+                        otaFees: -3760,
+                        cleaningFees: -2800,
+                        agencyFee: -4980,
+                        maintenance: -350,
+                        netPayout: 29910,
+                        payoutStatus: 'Projected Jan 15 • DNB Bank ****4821',
+                        grossYoY: '2027 Cap Resets (0 / 90 nights)',
+                        occupancyPct: '71.0%',
+                        adrText: '22 / 90 nights booked for 2027',
+                        expensesNote: '1 annual filter replacement',
+                        bookings: [
+                            { startDay: 3, nights: 5, type: 'guest', channel: 'Booking.com', label: 'Guest Stay • 5 nights' },
+                            { startDay: 10, nights: 5, type: 'guest', channel: 'Airbnb', label: 'Guest Stay • 5 nights' },
+                            { startDay: 18, nights: 6, type: 'guest', channel: 'Direct', label: 'Guest Stay • 6 nights' },
+                            { startDay: 25, nights: 5, type: 'guest', channel: 'Airbnb', label: 'Guest Stay • 5 nights' }
+                        ]
+                    }
+                },
+                statements: [
+                    { period: 'October 2026', gross: '38,400 NOK', net: '27,310 NOK', status: 'Paid Oct 15', statusColor: 'emerald', breakdown: { gross: 38400, ota: -3450, clean: -2600, fee: -4540, maint: -500, net: 27310 } },
+                    { period: 'September 2026', gross: '42,100 NOK', net: '30,190 NOK', status: 'Paid Sep 15', statusColor: 'emerald', breakdown: { gross: 42100, ota: -3790, clean: -2800, fee: -4920, maint: -400, net: 30190 } },
+                    { period: 'August 2026', gross: '45,800 NOK', net: '33,120 NOK', status: 'Paid Aug 15', statusColor: 'emerald', breakdown: { gross: 45800, ota: -4120, clean: -3000, fee: -5560, maint: 0, net: 33120 } },
+                    { period: '2026 YTD Skatteetaten / DAC7', gross: '342,900 NOK', net: '245,800 NOK', status: 'Tax Ready', statusColor: 'pine', isTax: true }
+                ],
+                maintenanceLog: [
+                    {
+                        id: 'm-oslo-1',
+                        date: 'Nov 04, 2026',
+                        title: 'Balcony Door Gasket & Ventilation Filter',
+                        vendor: 'Oslo Vaktmester & Service AS',
+                        amount: '420 NOK',
+                        status: 'Auto-deducted',
+                        statusBadge: 'bg-amber-50 text-amber-800 border-amber-200',
+                        icon: 'wind',
+                        photoLabel: 'Flexit Ventilation Unit',
+                        notes: 'Replaced balanced ventilation HEPA filter and adjusted balcony door seal for winter soundproofing.'
+                    },
+                    {
+                        id: 'm-oslo-2',
+                        date: 'Oct 22, 2026',
+                        title: 'Nespresso Machine Descaling & Welcome Kit',
+                        vendor: 'Nordic Stays Housekeeping Oslo',
+                        amount: '500 NOK',
+                        status: 'Settled in Oct',
+                        statusBadge: 'bg-slate-100 text-slate-700 border-slate-200',
+                        icon: 'coffee',
+                        photoLabel: 'Kitchen Counter Setup',
+                        notes: 'Descaled coffee machine and restocked Nordic organic coffee capsules and dishwasher tabs.'
+                    },
+                    {
+                        id: 'm-oslo-3',
+                        date: 'Sep 18, 2026',
+                        title: 'Smart Intercom & Yale Bridge Firmware Update',
+                        vendor: 'Nordic Stays Field Tech (Olav K.)',
+                        amount: '400 NOK',
+                        status: 'Settled in Sep',
+                        statusBadge: 'bg-slate-100 text-slate-700 border-slate-200',
+                        icon: 'wifi',
+                        photoLabel: 'Yale Connect Wi-Fi Bridge',
+                        notes: 'Updated Yale Connect bridge firmware and tested street-level buzzer integration.'
+                    }
+                ]
+            }
+        };
+
+        // 2. Localization Dictionary (EN / NO / SE)
+        const i18nStrings = {
+            EN: {
+                ownerRole: 'Property Owner',
+                reserveOwnerStayBtn: '+ Reserve Owner Stay',
+                kpiNetPayout: 'Net Owner Payout',
+                kpiGrossIncome: 'Gross Rental Income',
+                kpiExpenses: 'Deducted Expenses',
+                calendarHeading: 'Availability & Owner Stay Calendar',
+                waterfallHeading: 'Payout Calculation Breakdown',
+                statementsHeading: 'Monthly Statements & Nordic Tax Reports',
+                maintenanceHeading: 'Property Care, Smart Lock & Maintenance Receipts'
+            },
+            NO: {
+                ownerRole: 'Bolig- / Hytteeier',
+                reserveOwnerStayBtn: '+ Reserver Eiertid',
+                kpiNetPayout: 'Netto Utbetaling Eier',
+                kpiGrossIncome: 'Brutto Leieinntekt',
+                kpiExpenses: 'Trukket Utgifter',
+                calendarHeading: 'Tilgjengelighet & Eiertid Kalender',
+                waterfallHeading: 'Oppgjørsberegning (Netto)',
+                statementsHeading: 'Månedsoppgjør & Skatteetaten / DAC7',
+                maintenanceHeading: 'Vedlikehold, Smartlås & Kvitteringer'
+            },
+            SE: {
+                ownerRole: 'Fastighets- / Stugägare',
+                reserveOwnerStayBtn: '+ Boka Ägarvistelse',
+                kpiNetPayout: 'Nettoutbetalning Ägare',
+                kpiGrossIncome: 'Bruttohyresintäkt',
+                kpiExpenses: 'Avdragna Utgifter',
+                calendarHeading: 'Tillgänglighet & Ägarbokningar',
+                waterfallHeading: 'Utbetalningsspecifikation',
+                statementsHeading: 'Månadsredovisning & Skatteverket / DAC7',
+                maintenanceHeading: 'Underhåll, Smart Lås & Kvitton'
+            }
+        };
+
+        let currentPropId = 'hemsedal';
+        let currentMonthKey = '2026-11';
+        let currentLocale = 'EN';
+
+        function formatCurrency(val, currency) {
+            const absFormatted = Math.abs(val).toLocaleString('en-US');
+            return val < 0 ? `-${absFormatted} ${currency}` : `${absFormatted} ${currency}`;
+        }
+
+        function setLocale(lang) {
+            currentLocale = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if (btn.dataset.lang === lang) {
+                    btn.className = 'lang-btn rounded-lg bg-white px-2.5 py-1.5 text-fjord-900 shadow-2xs transition-all';
+                } else {
+                    btn.className = 'lang-btn rounded-lg px-2.5 py-1.5 text-slate-500 hover:text-fjord-900 transition-all';
+                }
+            });
+
+            const dict = i18nStrings[lang] || i18nStrings.EN;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.dataset.i18n;
+                if (dict[key]) el.textContent = dict[key];
+            });
+        }
+
+        function switchProperty(propId) {
+            currentPropId = propId;
+            renderAll();
+        }
+
+        function switchMonth(monthKey) {
+            currentMonthKey = monthKey;
+            document.querySelectorAll('.month-btn').forEach(btn => {
+                if (btn.dataset.month === monthKey) {
+                    btn.className = 'month-btn rounded-lg bg-white px-3 py-1.5 text-fjord-900 shadow-2xs transition-all';
+                } else {
+                    btn.className = 'month-btn rounded-lg px-3 py-1.5 text-slate-500 hover:text-fjord-900 transition-all';
+                }
+            });
+            renderAll();
+        }
+
+        function renderAll() {
+            const prop = propertiesStore[currentPropId];
+            const mData = prop.monthlyData[currentMonthKey];
+
+            // 1. Update Property Header Banner
+            document.getElementById('prop-title').textContent = prop.name;
+            document.getElementById('prop-type-badge').textContent = prop.typeBadge;
+            document.getElementById('prop-smartlock-status').textContent = prop.smartLock;
+            document.getElementById('prop-subtitle').textContent = prop.subtitle;
+            document.getElementById('tax-export-btn-label').textContent = `${prop.taxAuthority} Export`;
+            document.getElementById('prop-icon-box').innerHTML = `<i data-lucide="${prop.icon}" class="h-6 w-6"></i>`;
+
+            // 2. Update Top KPI Cards
+            document.getElementById('kpi-net-payout').textContent = formatCurrency(mData.netPayout, prop.currency);
+            document.getElementById('kpi-payout-status').textContent = mData.payoutStatus;
+            document.getElementById('kpi-gross-income').textContent = formatCurrency(mData.gross, prop.currency);
+            document.getElementById('kpi-gross-yoy').textContent = mData.grossYoY;
+            document.getElementById('kpi-expenses-val').textContent = formatCurrency(mData.maintenance, prop.currency);
+            document.getElementById('kpi-expenses-note').textContent = mData.expensesNote;
+
+            // Card 3: Special Municipal 90-Night Cap Tracker for Oslo Apartment vs Seasonal Occupancy for Cabins
+            const occLabel = document.getElementById('kpi-occ-label');
+            const occVal = document.getElementById('kpi-occ-value');
+            const occFooter = document.getElementById('kpi-occ-footer');
+
+            if (prop.isOsloApartment) {
+                occLabel.textContent = 'Oslo 90-Night Municipal Cap';
+                occVal.innerHTML = `${prop.nightsUsed} <span class="text-base font-bold text-slate-400">/ ${prop.nightsCap} nights</span>`;
+                const pct = Math.min(100, Math.round((prop.nightsUsed / prop.nightsCap) * 100));
+                occFooter.innerHTML = `
+                    <div class="flex items-center justify-between text-[11px] font-bold text-pine-700 mb-1">
+                        <span>Municipal Cap Safe</span>
+                        <span>${prop.nightsCap - prop.nightsUsed} nights remaining</span>
+                    </div>
+                    <div class="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                        <div class="h-full rounded-full bg-pine-600 transition-all" style="width: ${pct}%"></div>
+                    </div>
+                `;
+            } else {
+                occLabel.textContent = 'Occupancy Rate';
+                occVal.textContent = mData.occupancyPct;
+                occFooter.innerHTML = `<p class="text-xs font-medium text-slate-500">${mData.adrText}</p>`;
+            }
+
+            // 3. Render Interactive Availability & Owner Stay Calendar
+            renderOwnerCalendar(prop, mData);
+
+            // 4. Render Financial Waterfall & Statements Table
+            renderFinancialWaterfall(prop, mData);
+            renderStatementsTable(prop);
+
+            // 5. Render Maintenance & Receipts Log
+            renderMaintenanceLog(prop);
+
+            lucide.createIcons();
+        }
+
+        // =====================================================================
+        // RENDER: GDPR-Compliant Availability & Owner Stay Calendar
+        // =====================================================================
+        function renderOwnerCalendar(prop, mData) {
+            const grid = document.getElementById('owner-calendar-grid');
+            const monthMeta = {
+                '2026-11': { year: 2026, month: 11, days: 30, startOffset: 6 }, // Nov 1, 2026 is Sunday (offset 6 in Mon-Sun grid)
+                '2026-12': { year: 2026, month: 12, days: 31, startOffset: 1 }, // Dec 1, 2026 is Tuesday
+                '2027-01': { year: 2027, month: 1,  days: 31, startOffset: 4 }  // Jan 1, 2027 is Friday
+            }[currentMonthKey];
+
+            let cellsHtml = '';
+
+            // Leading empty offset cells
+            for (let i = 0; i < monthMeta.startOffset; i++) {
+                cellsHtml += `<div class="min-h-[76px] sm:min-h-[86px] rounded-xl bg-slate-50/60 border border-slate-100"></div>`;
+            }
+
+            // Day cells 1..days
+            for (let day = 1; day <= monthMeta.days; day++) {
+                // Check if day falls inside any booking or owner block
+                const activeBooking = mData.bookings.find(b => day >= b.startDay && day < b.startDay + b.nights);
+                const isoDate = `${monthMeta.year}-${String(monthMeta.month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+                if (activeBooking) {
+                    const isStart = day === activeBooking.startDay;
+                    const isOwner = activeBooking.type === 'owner';
+                    const barColor = isOwner
+                        ? 'bg-amber-500 text-white border-amber-600'
+                        : 'bg-pine-600 text-white border-pine-700';
+                    const channelShort = {
+                        'Airbnb': 'A',
+                        'Booking.com': 'B.',
+                        'Finn.no': 'F',
+                        'Direct': 'N',
+                        'Owner': '★'
+                    }[activeBooking.channel] || 'N';
+
+                    cellsHtml += `
+                        <div class="min-h-[76px] sm:min-h-[86px] rounded-xl border border-slate-200/80 bg-slate-50/40 p-1.5 flex flex-col justify-between">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-600">${day}</span>
+                                <span class="text-[10px] font-semibold text-slate-400">${activeBooking.channel}</span>
+                            </div>
+                            <div title="${activeBooking.label} (GDPR Protected)"
+                                class="slant-bar ${barColor} px-2 py-1.5 text-[10px] sm:text-[11px] font-bold shadow-2xs truncate flex items-center gap-1">
+                                <span class="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-white/20 text-[9px] font-extrabold">
+                                    ${channelShort}
+                                </span>
+                                <span class="truncate">${isStart ? activeBooking.label : (isOwner ? 'Owner Stay' : 'Guest Stay')}</span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Open Available Date — clickable to open Reserve Owner Stay modal prefilled with that date
+                    const weekendBump = (day % 7 === 5 || day % 7 === 6) ? 1.15 : 1.0;
+                    const nightlyEst = Math.round((prop.baseNightlyRate * weekendBump) / 50) * 50;
+
+                    cellsHtml += `
+                        <button type="button" onclick="openOwnerStayModal('${isoDate}')"
+                            title="Open date — Click to reserve owner stay"
+                            class="group min-h-[76px] sm:min-h-[86px] rounded-xl border border-slate-200 bg-white p-1.5 text-left flex flex-col justify-between hover:border-pine-600 hover:bg-pine-50/40 transition-all cursor-pointer">
+                            <div class="flex items-center justify-between w-full">
+                                <span class="text-xs font-bold text-fjord-900 group-hover:text-pine-800">${day}</span>
+                                <span class="opacity-0 group-hover:opacity-100 text-[10px] font-bold text-pine-700 transition-opacity">+ Block</span>
+                            </div>
+                            <div class="rounded-md bg-slate-100/90 group-hover:bg-pine-100/80 px-1.5 py-1 text-center text-[10px] sm:text-[11px] font-semibold text-slate-600 group-hover:text-pine-800 transition-colors">
+                                ${nightlyEst.toLocaleString('en-US')} ${prop.currency}
+                            </div>
+                        </button>
+                    `;
+                }
+            }
+
+            grid.innerHTML = cellsHtml;
+        }
+
+        // =====================================================================
+        // RENDER: Itemized Financial Waterfall & Statements Table
+        // =====================================================================
+        function renderFinancialWaterfall(prop, mData) {
+            document.getElementById('waterfall-period-label').textContent = `${mData.monthName} • Settlement Statement`;
+            document.getElementById('waterfall-vat-badge').textContent = prop.vatLabel;
+            document.getElementById('waterfall-net-total').textContent = formatCurrency(mData.netPayout, prop.currency);
+            document.getElementById('waterfall-vat-note').textContent = prop.vatNote;
+
+            const rows = [
+                { label: 'Gross Booking Revenue', sub: 'Airbnb, Booking.com, Finn.no & Direct', amount: mData.gross, positive: true },
+                { label: '(-) OTA Channel Commissions', sub: 'Platform service & payment fees', amount: mData.otaFees, positive: false },
+                { label: '(-) Guest Turnover Cleaning Fees', sub: 'Pass-through housekeeping turnovers', amount: mData.cleaningFees, positive: false },
+                { label: '(-) Agency Management Fee (20%)', sub: 'Nordic Stays Management AS', amount: mData.agencyFee, positive: false },
+                { label: '(-) Approved Maintenance & Supplies', sub: 'Photo-verified receipts', amount: mData.maintenance, positive: false }
+            ];
+
+            document.getElementById('payout-waterfall-rows').innerHTML = rows.map(r => `
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2.5 last:border-b-0">
+                    <div>
+                        <div class="font-semibold text-fjord-900">${r.label}</div>
+                        <div class="text-[11px] text-slate-400">${r.sub}</div>
+                    </div>
+                    <div class="font-bold ${r.positive ? 'text-fjord-900' : 'text-slate-600'}">
+                        ${formatCurrency(r.amount, prop.currency)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderStatementsTable(prop) {
+            document.getElementById('tax-box-title').textContent = prop.taxBoxTitle;
+            document.getElementById('tax-box-desc').textContent = prop.taxBoxDesc;
+
+            const tbody = document.getElementById('statements-table-body');
+            tbody.innerHTML = prop.statements.map((st, idx) => {
+                const badgeClass = st.statusColor === 'pine'
+                    ? 'bg-pine-50 text-pine-800 border-pine-200'
+                    : 'bg-emerald-50 text-emerald-700 border-emerald-200';
+
+                return `
+                    <tr class="hover:bg-slate-50/70">
+                        <td class="py-3 pr-3 font-bold text-fjord-900">${st.period}</td>
+                        <td class="py-3 px-3 text-slate-600">${st.gross}</td>
+                        <td class="py-3 px-3 font-extrabold text-pine-800">${st.net}</td>
+                        <td class="py-3 px-3">
+                            <span class="inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${badgeClass}">
+                                ${st.status}
+                            </span>
+                        </td>
+                        <td class="py-3 pl-3 text-right">
+                            <div class="inline-flex items-center gap-1.5">
+                                <button onclick="inspectStatement(${idx})"
+                                    class="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-fjord-800 hover:border-pine-600 hover:text-pine-700 cursor-pointer">
+                                    View
+                                </button>
+                                <button onclick="downloadTaxReport('${st.period} PDF')"
+                                    class="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-semibold text-fjord-800 hover:bg-pine-700 hover:text-white transition-colors cursor-pointer">
+                                    PDF
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // =====================================================================
+        // RENDER: Maintenance & Receipts Log
+        // =====================================================================
+        function renderMaintenanceLog(prop) {
+            const grid = document.getElementById('maintenance-log-grid');
+            grid.innerHTML = prop.maintenanceLog.map(item => `
+                <div class="flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-slate-50/50 p-4 hover:border-pine-300 transition-colors">
+                    <div>
+                        <!-- Simulated Photo Thumbnail Header -->
+                        <div class="flex items-center justify-between rounded-xl bg-white border border-slate-200/80 p-3">
+                            <div class="flex items-center gap-2.5">
+                                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-pine-50 text-pine-700">
+                                    <i data-lucide="${item.icon}" class="h-4 w-4"></i>
+                                </div>
+                                <div>
+                                    <div class="text-[11px] font-bold text-fjord-900">${item.photoLabel}</div>
+                                    <div class="text-[10px] text-slate-400">${item.date}</div>
+                                </div>
+                            </div>
+                            <span class="rounded-full border px-2 py-0.5 text-[10px] font-bold ${item.statusBadge}">
+                                ${item.status}
+                            </span>
+                        </div>
+
+                        <h3 class="mt-3.5 text-sm font-extrabold text-fjord-900">${item.title}</h3>
+                        <p class="mt-0.5 text-[11px] font-medium text-slate-500">${item.vendor}</p>
+                        <p class="mt-2 text-xs leading-relaxed text-slate-600">${item.notes}</p>
+                    </div>
+
+                    <div class="mt-4 flex items-center justify-between border-t border-slate-200/70 pt-3">
+                        <span class="text-sm font-extrabold text-fjord-900">${item.amount}</span>
+                        <button onclick="inspectReceipt('${item.id}')"
+                            class="inline-flex items-center gap-1 text-xs font-bold text-pine-700 hover:text-pine-800 cursor-pointer">
+                            <i data-lucide="receipt" class="h-3.5 w-3.5"></i>
+                            View Receipt
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // =====================================================================
+        // INTERACTIVE MODAL LOGIC: Reserve Owner Stay, Statements & Receipts
+        // =====================================================================
+        function openOwnerStayModal(prefillCheckin) {
+            const prop = propertiesStore[currentPropId];
+            document.getElementById('modal-prop-name').textContent = `${prop.name} (${prop.currency})`;
+
+            const defaultCheckin = prefillCheckin || `${currentMonthKey}-15`;
+            // Default checkout = checkin + 2 days
+            const dt = new Date(defaultCheckin + 'T00:00:00');
+            dt.setDate(dt.getDate() + 2);
+            const defaultCheckout = dt.toISOString().split('T')[0];
+
+            document.getElementById('owner-checkin').value = defaultCheckin;
+            document.getElementById('owner-checkout').value = defaultCheckout;
+            document.getElementById('owner-stay-error').classList.add('hidden');
+
+            const modal = document.getElementById('owner-stay-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeOwnerStayModal() {
+            const modal = document.getElementById('owner-stay-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function submitOwnerStay(e) {
+            e.preventDefault();
+            const prop = propertiesStore[currentPropId];
+            const checkinStr = document.getElementById('owner-checkin').value;
+            const checkoutStr = document.getElementById('owner-checkout').value;
+            const note = document.getElementById('owner-stay-note').value.trim();
+            const errBox = document.getElementById('owner-stay-error');
+
+            const d1 = new Date(checkinStr + 'T00:00:00');
+            const d2 = new Date(checkoutStr + 'T00:00:00');
+
+            if (d2 <= d1) {
+                errBox.textContent = 'Check-out date must be at least 1 night after check-in.';
+                errBox.classList.remove('hidden');
+                return;
+            }
+
+            const targetMonthKey = checkinStr.slice(0, 7);
+            const targetMonth = prop.monthlyData[targetMonthKey] || prop.monthlyData[currentMonthKey];
+            const startDay = d1.getDate();
+            const nights = Math.min(10, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)));
+
+            // Add live Owner Stay block to calendar state
+            targetMonth.bookings.push({
+                startDay: startDay,
+                nights: nights,
+                type: 'owner',
+                channel: 'Owner',
+                label: 'Owner Stay • Henrik',
+                note: note
+            });
+
+            if (prop.monthlyData[targetMonthKey]) {
+                switchMonth(targetMonthKey);
+            } else {
+                renderAll();
+            }
+
+            closeOwnerStayModal();
+            showToast(
+                'Owner Stay Reserved & Synced',
+                `Blocked ${nights} night(s) at ${prop.name} & synced to Airbnb, Booking.com, and Finn.no.`
+            );
+        }
+
+        function inspectStatement(idx) {
+            const prop = propertiesStore[currentPropId];
+            const st = prop.statements[idx];
+            const modal = document.getElementById('detail-modal');
+            document.getElementById('detail-modal-title').textContent = `${st.period} • ${prop.name}`;
+
+            if (st.isTax) {
+                document.getElementById('detail-modal-body').innerHTML = `
+                    <div class="space-y-3 text-xs">
+                        <div class="rounded-xl bg-pine-50 border border-pine-200 p-3.5 text-pine-900">
+                            <strong>${prop.taxAuthority} Compliance Summary:</strong> Ready for direct upload to your tax filing portal.
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="rounded-xl border border-slate-200 p-3">
+                                <div class="text-slate-400">2026 YTD Gross Rental</div>
+                                <div class="mt-1 text-base font-extrabold text-fjord-900">${st.gross}</div>
+                            </div>
+                            <div class="rounded-xl border border-slate-200 p-3">
+                                <div class="text-slate-400">2026 YTD Net Owner Payout</div>
+                                <div class="mt-1 text-base font-extrabold text-pine-800">${st.net}</div>
+                            </div>
+                        </div>
+                        <p class="text-slate-600 leading-relaxed">
+                            All OTA commissions, pass-through cleaning fees, and photo-verified maintenance expenses have been categorized with split Moms/VAT receipts.
+                        </p>
+                        <div class="flex justify-end gap-2 pt-2">
+                            <button onclick="closeDetailModal(); downloadTaxReport('${st.period} Official Pack');"
+                                class="rounded-xl bg-pine-700 px-4 py-2 font-bold text-white hover:bg-pine-800">
+                                Download XML &amp; PDF
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                const b = st.breakdown;
+                document.getElementById('detail-modal-body').innerHTML = `
+                    <div class="space-y-2.5 text-xs">
+                        <div class="flex justify-between py-1.5 border-b border-slate-100">
+                            <span class="text-slate-600">Gross Rental Revenue</span>
+                            <span class="font-bold text-fjord-900">${formatCurrency(b.gross, prop.currency)}</span>
+                        </div>
+                        <div class="flex justify-between py-1.5 border-b border-slate-100">
+                            <span class="text-slate-600">OTA Channel Commissions</span>
+                            <span class="font-semibold text-slate-600">${formatCurrency(b.ota, prop.currency)}</span>
+                        </div>
+                        <div class="flex justify-between py-1.5 border-b border-slate-100">
+                            <span class="text-slate-600">Turnover Cleaning Fees</span>
+                            <span class="font-semibold text-slate-600">${formatCurrency(b.clean, prop.currency)}</span>
+                        </div>
+                        <div class="flex justify-between py-1.5 border-b border-slate-100">
+                            <span class="text-slate-600">Agency Management Fee (20%)</span>
+                            <span class="font-semibold text-slate-600">${formatCurrency(b.fee, prop.currency)}</span>
+                        </div>
+                        <div class="flex justify-between py-1.5 border-b border-slate-100">
+                            <span class="text-slate-600">Approved Maintenance</span>
+                            <span class="font-semibold text-slate-600">${formatCurrency(b.maint, prop.currency)}</span>
+                        </div>
+                        <div class="flex justify-between rounded-xl bg-pine-50 p-3 font-extrabold text-pine-900 text-sm">
+                            <span>Net Payout (${prop.bankAccount})</span>
+                            <span>${formatCurrency(b.net, prop.currency)}</span>
+                        </div>
+                        <div class="flex justify-end gap-2 pt-2">
+                            <button onclick="closeDetailModal()" class="rounded-xl border border-slate-300 px-4 py-2 font-bold text-fjord-800">Close</button>
+                            <button onclick="closeDetailModal(); downloadTaxReport('${st.period} Statement PDF');"
+                                class="rounded-xl bg-fjord-900 px-4 py-2 font-bold text-white hover:bg-pine-700">
+                                Download PDF
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function inspectReceipt(itemId) {
+            const prop = propertiesStore[currentPropId];
+            const item = prop.maintenanceLog.find(m => m.id === itemId);
+            if (!item) return;
+
+            const modal = document.getElementById('detail-modal');
+            document.getElementById('detail-modal-title').textContent = `Verified Expense Receipt • ${item.date}`;
+            document.getElementById('detail-modal-body').innerHTML = `
+                <div class="space-y-3 text-xs">
+                    <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-fjord-900 text-sm">${item.title}</span>
+                            <span class="font-extrabold text-fjord-900 text-sm">${item.amount}</span>
+                        </div>
+                        <div class="mt-1 text-slate-500">Vendor: ${item.vendor}</div>
+                        <div class="mt-3 rounded-lg bg-white border border-dashed border-slate-300 p-4 text-center">
+                            <i data-lucide="image" class="mx-auto h-6 w-6 text-pine-700"></i>
+                            <div class="mt-1 font-bold text-fjord-800">Technician Photo Proof: ${item.photoLabel}</div>
+                            <div class="text-[11px] text-slate-400">Timestamped &amp; GPS-verified at ${prop.name}</div>
+                        </div>
+                        <p class="mt-3 text-slate-600 leading-relaxed">${item.notes}</p>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button onclick="closeDetailModal()" class="rounded-xl bg-fjord-900 px-4 py-2 font-bold text-white hover:bg-pine-700">Done</button>
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function closeDetailModal() {
+            const modal = document.getElementById('detail-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function downloadTaxReport(reportName) {
+            const prop = propertiesStore[currentPropId];
+            showToast(
+                'Export Generated',
+                `Downloaded "${prop.name} — ${reportName}" with split Nordic VAT/Moms breakdown.`
+            );
+        }
+
+        let toastTimer = null;
+        function showToast(title, message) {
+            const toast = document.getElementById('portal-toast');
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-message').textContent = message;
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('flex');
+            }, 4500);
+        }
+
+        // Initial Render
+        renderAll();
+    </script>
+</body>
+</html>
